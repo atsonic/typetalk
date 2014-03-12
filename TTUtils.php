@@ -1,8 +1,13 @@
 <?php
+//ステータスコード、エラーコードなんかがあまいので要検討
 require_once("Include.php");
 require_once('lib/Pusher.php');
 
+//JSONとして吐き出すためヘッダーを追加
 header("Content-Type: text/javascript; charset=utf-8");
+
+//getでtypeがあることと、セッションにtokenがあることを確認。
+//まだ処理が完璧じゃない。
 if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
 	$token = $_SESSION['tt_token'];
 	switch ($_GET['type']) {
@@ -42,6 +47,8 @@ if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
 }else{
 	printError(2);
 }
+
+//プロフィールの取得
 function getProfile(){
 	global $token;
 	$options = array('http' => array(
@@ -143,6 +150,8 @@ function getTopic($id, $from, $count, $direction){
 	}
 }
 
+//メッセージ送信
+//画像添付とか未処理。
 function sendMessage($id, $message){
 	global $token;
 	$url = TOPICS_URI."/".$id;
@@ -169,6 +178,7 @@ function sendMessage($id, $message){
 	}
 }
 
+//Like送信
 function postLike($topicId, $postId){
 	global $token;
 	$url = TOPICS_URI."/".$topicId."/posts/".$postId."/like";

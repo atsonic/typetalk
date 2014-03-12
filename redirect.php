@@ -48,6 +48,8 @@ if(!isset($_SESSION["tt_code"])){
 		}
 	}
 }
+
+//typetalkの認証へ
 function backToOAuth(){
 	global $ttOauth;
 	$ttOauth->deleteCookies();
