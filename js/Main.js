@@ -15,9 +15,7 @@ function setSubmit(){
 }
 
 function getProfile(){
-	var token = $.cookie('tt_token');
 	var data = new Object();
-	data.token = token;
 	data.type = "profile";
 	$.ajax({
 		dataType: "json",
@@ -38,9 +36,7 @@ function getProfile(){
 }
 
 function getTopicList(){
-	var token = $.cookie('tt_token');
 	var data = new Object();
-	data.token = token;
 	data.type = "topicsList";
 	$.ajax({
 		dataType: "json",
@@ -79,9 +75,7 @@ function selectTopic(obj){
 
 function getTopic(topicId, from, count, direction){
 	$("#timeline").empty();
-	var token = $.cookie('tt_token');
 	var data = new Object();
-	data.token = token;
 	data.type = "topic";
 	data.id = topicId;
 	if(from != null){data.from = from;}
@@ -146,10 +140,8 @@ function getTopic(topicId, from, count, direction){
 	return false;
 }
 function sendMessage(){
-	var token = $.cookie('tt_token');
 	var data = new Object();
 	data.id = topicID;
-	data.token = token;
 	data.type = "sendMessage";
 	data.message = $('#inputMessage').val();
 	//alert($('#inputMessage').val());
@@ -171,10 +163,8 @@ function sendMessage(){
 }
 function pushLike(){
 	$('.like').click(function(event){
-		var token = $.cookie('tt_token');
 		var data = new Object();
 		data.topicId = topicID;
-		data.token = token;
 		data.type = "like";
 		data.postId = $(this).attr('id');
 		var me = $(this);

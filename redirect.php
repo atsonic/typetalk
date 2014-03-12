@@ -1,7 +1,6 @@
 <?php
-require_once("Config.php");
+require_once("Include.php");
 require_once("TTOauth.php");
-include("Include.php");
 
 $code;//アプリコード
 $token;//アプリtoken
@@ -18,6 +17,8 @@ if(isset($_GET['code'])){
 
 //tt_codeがない場合
 if(!isset($_SESSION["tt_code"])){
+	//print "fdsa";
+	//var_dump($_SESSION);
 	backToOAuth();
 }else{
 	$code = $_SESSION["tt_code"];
@@ -59,7 +60,6 @@ function backToOAuth(){
 <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0" />
 <script type="text/javascript" src="http://js.pusher.com/2.1/pusher.min.js"></script>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="js/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/Config.js"></script>
 <script type="text/javascript" src="js/Main.js"></script>
 <link rel="stylesheet" type="text/css" href="css/Main.css">

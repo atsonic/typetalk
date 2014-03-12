@@ -1,11 +1,10 @@
 <?php
-require_once("Config.php");
+require_once("Include.php");
 require_once('lib/Pusher.php');
-include("Include.php");
 
 header("Content-Type: text/javascript; charset=utf-8");
-if(isset($_GET['type']) && isset($_SESSION['token'])){
-	$token = $_SESSION['token'];
+if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
+	$token = $_SESSION['tt_token'];
 	switch ($_GET['type']) {
 		case 'profile':
 			getProfile();
@@ -40,6 +39,8 @@ if(isset($_GET['type']) && isset($_SESSION['token'])){
 		default:
 			break;
 	}
+}else{
+	printError(2);
 }
 function getProfile(){
 	global $token;
@@ -188,9 +189,12 @@ function postLike($topicId, $postId){
 }
 
 //エラー出力
-function printError(){
+function printError($status){
+	if($status == null){
+		$status = 1;
+	}
 	$jsonObj = new stdClass();
-	$jsonObj->status = "1";
+	$jsonObj->status = $status;
 	$json = json_encode($jsonObj);
 	echo $json;
 }

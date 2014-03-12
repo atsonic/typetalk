@@ -1,6 +1,4 @@
 <?php
-require_once("Config.php");
-include("Include.php");
 class TTOauth {
 	//token取得
 	public function getToken($code){
@@ -26,9 +24,7 @@ class TTOauth {
 			$token = $json->access_token;
 			$r_token = $json->refresh_token;
 			$_SESSION["tt_token"] = $token;
-			$_SESSION["tt_r_token"] = $tt_r_token;
-			//setcookie('tt_token', $token, time() + (60 * 60));
-			//setcookie('tt_r_token', $r_token, time() + (60 * 60 * 24 * 30));
+			$_SESSION["tt_r_token"] = $r_token;
 			$obj->status = "0";
 			$obj->token = $token;
 			$obj->r_token = $r_token;
