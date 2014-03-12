@@ -1,29 +1,32 @@
 <?php
 require_once("Config.php");
 require_once("TTOauth.php");
+include("Include.php");
+
 $code;//アプリコード
 $token;//アプリtoken
 $r_token;//アプリrefresh token
 $ttOauth = new TTOauth();//typetalk oAuthオブジェクト
-//$ttUtils = new TTUtils();//typetalk utilsオブジェクト
+
+
 //諸々判定
 if(isset($_GET['code'])){
-	setcookie("tt_code", $_GET['code'], time() + (60 * 60 * 24 * 30), '/');
+	$_SESSION["tt_code"] = $_GET['code'];
 	header("Location: redirect.php");
 	exit;
 }
 
-//tt_codeがある場合
-if(!isset($_COOKIE["tt_code"])){
+//tt_codeがない場合
+if(!isset($_SESSION["tt_code"])){
 	backToOAuth();
 }else{
-	$code = $_COOKIE["tt_code"];
+	$code = $_SESSION["tt_code"];
 	//tokenセットありの場合
-	if(isset($_COOKIE["tt_token"]) && isset($_COOKIE["tt_r_token"])){
-		$token = $_COOKIE["tt_token"];
-		$r_token = $_COOKIE["tt_r_token"];
+	if(isset($_SESSION["tt_token"]) && isset($_SESSION["tt_r_token"])){
+		$token = $_SESSION["tt_token"];
+		$r_token = $_SESSION["tt_r_token"];
 	//tokenなし、refresh tokenありの場合
-	}else if(!isset($_COOKIE["tt_token"]) && isset($_COOKIE["tt_r_token"])){
+	}else if(!isset($_SESSION["tt_token"]) && isset($_SESSION["tt_r_token"])){
 		$tokenObj = $ttOauth->updateAccessToken();
 		$status = $tokenObj->status;
 		if($status == "0"){

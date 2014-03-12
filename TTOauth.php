@@ -1,5 +1,6 @@
 <?php
 require_once("Config.php");
+include("Include.php");
 class TTOauth {
 	//token取得
 	public function getToken($code){
@@ -24,8 +25,10 @@ class TTOauth {
 		}else{
 			$token = $json->access_token;
 			$r_token = $json->refresh_token;
-			setcookie('tt_token', $token, time() + (60 * 60));
-			setcookie('tt_r_token', $r_token, time() + (60 * 60 * 24 * 30));
+			$_SESSION["tt_token"] = $token;
+			$_SESSION["tt_r_token"] = $tt_r_token;
+			//setcookie('tt_token', $token, time() + (60 * 60));
+			//setcookie('tt_r_token', $r_token, time() + (60 * 60 * 24 * 30));
 			$obj->status = "0";
 			$obj->token = $token;
 			$obj->r_token = $r_token;
@@ -35,8 +38,8 @@ class TTOauth {
 	//リフレッシュtokenでaccess tokenを更新
 	public function updateAccessToken(){
 		$obj = new stdClass();
-		if(isset($_COOKIE["tt_r_token"])){//refresh token確認
-			$r_token = $_COOKIE['tt_r_token'];
+		if(isset($_SESSION["tt_r_token"])){//refresh token確認
+			$r_token = $_SESSION['tt_r_token'];
 			$fields = array(
 			    'client_id' => CLIENT_ID,
 			    'client_secret' => CLIENT_SECRET,
@@ -51,7 +54,8 @@ class TTOauth {
 			$json = json_decode(file_get_contents(ACCESS_TOKEN_URI, false, stream_context_create($options)));
 			//var_dump($json);
 			$token = $json->access_token;
-			setcookie('tt_token', $token, time() + (60 * 60));
+			//setcookie('tt_token', $token, time() + (60 * 60));
+			$_SESSION["tt_token"] = $token;
 			if($json == null){
 				$obj->status= "1";
 				$obj->token= "";
@@ -71,9 +75,12 @@ class TTOauth {
 	}
 	//cookie削除
 	public function deleteCookies(){
+		/*
 		setcookie('tt_code','',time() - 3600);
 		setcookie('tt_token','',time() - 3600);
 		setcookie('tt_r_token','',time() - 3600);
+		*/
+		setcookie(session_name(),'',time() - 3600);
 	}
 }
 ?>

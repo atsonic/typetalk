@@ -1,10 +1,11 @@
 <?php
 require_once("Config.php");
 require_once('lib/Pusher.php');
+include("Include.php");
 
 header("Content-Type: text/javascript; charset=utf-8");
-if(isset($_GET['type']) && isset($_GET['token'])){
-	$token = $_GET['token'];
+if(isset($_GET['type']) && isset($_SESSION['token'])){
+	$token = $_SESSION['token'];
 	switch ($_GET['type']) {
 		case 'profile':
 			getProfile();

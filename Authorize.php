@@ -1,7 +1,8 @@
 <?php
 require("Config.php");
+include("Include.php");
 $url;
-if (isset($_COOKIE["tt_code"])){
+if(isset($_COOKIE[session_name()])){
 	$url = REDIRECT_URI;
 }else{
 	$data = array(
