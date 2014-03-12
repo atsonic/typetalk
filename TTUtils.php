@@ -45,7 +45,8 @@ if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
 			break;
 	}
 }else{
-	printError(2);
+	unsetSession();
+	printError();
 }
 
 //プロフィールの取得
@@ -56,7 +57,8 @@ function getProfile(){
 	    'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer " . $token));
 	$res = @file_get_contents(PROFILE_URI, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401'){
+	if($status_code == '401' || $res == null){
+		unsetSession();
 		printError();
 	}else{
 		$json = json_decode($res);
@@ -78,7 +80,8 @@ function getTopicsList(){
 	    'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer " . $token));
 	$res = @file_get_contents(TOPICS_URI, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401'){
+	if($status_code == '401' || $res == null){
+		unsetSession();
 		printError();
 	}else{
 		$json = json_decode($res);
@@ -119,7 +122,8 @@ function getTopic($id, $from, $count, $direction){
 
 	$res = @file_get_contents(TOPICS_URI."/".$id, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401'){
+	if($status_code == '401' || $res == null){
+		unsetSession();
 		printError();
 	}else{
 		$json = json_decode($res);
@@ -164,7 +168,8 @@ function sendMessage($id, $message){
 	    'content' => http_build_query($fields)));
 	$res = @file_get_contents($url, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401'){
+	if($status_code == '401' || $res == null){
+		unsetSession();
 		printError();
 	}else{
 		$pusher = new Pusher('39daabf949c81c9b1bea', '3c2d2f70a09e11bf0ddd', '66619');
@@ -188,7 +193,8 @@ function postLike($topicId, $postId){
 	$res = @file_get_contents($url, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 
-	if($status_code == '401'){
+	if($status_code == '401' || $res == null){
+		unsetSession();
 		printError();
 	}else{
 		$jsonObj = new stdClass();
