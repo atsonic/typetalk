@@ -1,0 +1,17 @@
+.checkLike{
+	width: 40px;
+	height: 20px;
+	background: white;
+	border: 1px solid red;
+}
+
+.like{
+	width: 40px;
+	height: 20px;
+	background: red;
+	color: white;
+}
+
+.like:hover{
+	cursor: pointer;;
+}
