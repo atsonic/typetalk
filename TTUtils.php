@@ -55,17 +55,29 @@ if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
 //プロフィールの取得
 function getProfile(){
 	global $token,$r_token,$ttOauth;
+
 	$options = array('http' => array(
 	    'method' => 'GET',
 	    'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer " . $token));
 	$res = @file_get_contents(PROFILE_URI, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-
+	//var_dump($res);
 	//認証エラーの時
 	if($status_code == '401'){
-		unsetSession();
-		printError();
-	//戻り値が空の時（access_token期限切れ）
+		//unsetSession();
+		//printError();
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			getProfile();
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
+	//戻り値が空の時（access_token期限切れ？）
 	}else if(is_null($res)){
 		//access_tokenアップデート
 		$tokenObj = $ttOauth->updateAccessToken();
@@ -88,7 +100,6 @@ function getProfile(){
 		$jsonObj->name = $json->account->name;
 		$jsonObj->id = $json->account->id;
 		$jsonObj->imageUrl = $json->account->imageUrl;
-
 		echo json_encode($jsonObj);
 	}
 }
@@ -102,8 +113,20 @@ function getTopicsList(){
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 	//認証エラーの時
 	if($status_code == '401'){
-		unsetSession();
-		printError();
+		//unsetSession();
+		//printError();
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			getTopicsList();
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
 	//戻り値が空の時（access_token期限切れ）
 	}else if(is_null($res)){
 		//access_tokenアップデート
@@ -160,8 +183,20 @@ function getTopic($id, $from, $count, $direction){
 	$res = @file_get_contents(TOPICS_URI."/".$id, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 	if($status_code == '401'){
-		unsetSession();
-		printError();
+		//unsetSession();
+		//printError();
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			getTopic($id, $from, $count, $direction);
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
 	}else if(is_null($res)){
 		//access_tokenアップデート
 		$tokenObj = $ttOauth->updateAccessToken();
@@ -220,8 +255,19 @@ function sendMessage($id, $message){
 	$res = @file_get_contents($url, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 	if($status_code == '401'){
-		unsetSession();
-		printError();
+		//unsetSession();
+		//printError();
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			sendMessage($id, $message);
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
 	}else if(is_null($res)){
 		//access_tokenアップデート
 		$tokenObj = $ttOauth->updateAccessToken();
@@ -259,8 +305,19 @@ function postLike($topicId, $postId){
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 
 	if($status_code == '401'){
-		unsetSession();
-		printError();
+		//unsetSession();
+		//printError();
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			postLike($topicId, $postId);
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
 	}else if(is_null($res)){
 		//access_tokenアップデート
 		$tokenObj = $ttOauth->updateAccessToken();

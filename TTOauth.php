@@ -16,13 +16,13 @@ class TTOauth {
 		    'content' => http_build_query($fields)));
 
 		$json = json_decode(@file_get_contents(ACCESS_TOKEN_URI, false, stream_context_create($options)));
+		list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 
-		//取得失敗
-		if(is_null($json)){
+		//認証エラーの時
+		if($status_code == '401' || is_null($json)){
 			$obj->status= "1";
 			$obj->token= "";
 			$obj->r_token= "";
-
 		//取得成功
 		}else{
 			$token = $json->access_token;
@@ -40,6 +40,7 @@ class TTOauth {
 		$obj = new stdClass();
 		if(isset($_SESSION["tt_r_token"])){//refresh token確認
 			$r_token = $_SESSION['tt_r_token'];
+			//$r_token = "";
 			$fields = array(
 			    'client_id' => CLIENT_ID,
 			    'client_secret' => CLIENT_SECRET,
@@ -51,27 +52,26 @@ class TTOauth {
 			    'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
 			    'content' => http_build_query($fields)));
 
-			$json = json_decode(file_get_contents(ACCESS_TOKEN_URI, false, stream_context_create($options)));
+			$json = json_decode(@file_get_contents(ACCESS_TOKEN_URI, false, stream_context_create($options)));
+			list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 
-			$token = $json->access_token;
-			$_SESSION["tt_token"] = $token;
-
-			//取得失敗
-			if(is_null($json)){
+			//認証エラーの時
+			if($status_code == '401' || is_null($json)){
 				$obj->status= "1";
 				$obj->token= "";
 				$obj->r_token= "";
-
 			//取得成功
 			}else{
-				$obj->status= "0";
-				$obj->token= $token;
-				$obj->r_token= $r_token;
+				$token = $json->access_token;
+				$_SESSION["tt_token"] = $token;
+
+				$obj->status = "0";
+				$obj->token = $token;
+				$obj->r_token = $r_token;
 			}
-		}else{//tokenセットなしの場合
-			$obj->status= "1";
-			$obj->token= "";
-			$obj->r_token= "";
+		}else{//refresh tokenなしの場合
+			unsetSession();
+			header("Location: Authorize.php");
 		}
 		return $obj;
 	}

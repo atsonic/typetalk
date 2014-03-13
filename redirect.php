@@ -1,7 +1,6 @@
 <?php
 require_once("Include.php");
 require_once("TTOauth.php");
-
 $code;//アプリコード
 $token;//アプリtoken
 $r_token;//アプリrefresh token
@@ -13,7 +12,6 @@ if(isset($_GET['code'])){
 	header("Location: redirect.php");
 	exit;
 }
-
 //tt_codeがない場合
 if(!isset($_SESSION["tt_code"])){
 	backToOAuth();
@@ -27,9 +25,13 @@ if(!isset($_SESSION["tt_code"])){
 	}else{
 		$tokenObj = $ttOauth->getToken($code);
 		$status = $tokenObj->status;
+		//取得成功
 		if($status == "0"){
+			//セッションに保存してるから
+			//変数に格納するのはあまり意味が無い
 			$token = $tokenObj->token;
 			$r_token = $tokenObj->r_token;
+		//失敗
 		}else{
 			backToOAuth();
 		}
