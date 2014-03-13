@@ -64,8 +64,6 @@ function getProfile(){
 	//var_dump($res);
 	//認証エラーの時
 	if($status_code == '401'){
-		//unsetSession();
-		//printError();
 		$tokenObj = $ttOauth->updateAccessToken();
 		$status = $tokenObj->status;
 		//access_tokenアップデートが成功したら
@@ -113,8 +111,6 @@ function getTopicsList(){
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 	//認証エラーの時
 	if($status_code == '401'){
-		//unsetSession();
-		//printError();
 		//access_tokenアップデート
 		$tokenObj = $ttOauth->updateAccessToken();
 		$status = $tokenObj->status;
@@ -183,8 +179,6 @@ function getTopic($id, $from, $count, $direction){
 	$res = @file_get_contents(TOPICS_URI."/".$id, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 	if($status_code == '401'){
-		//unsetSession();
-		//printError();
 		//access_tokenアップデート
 		$tokenObj = $ttOauth->updateAccessToken();
 		$status = $tokenObj->status;
@@ -255,8 +249,6 @@ function sendMessage($id, $message){
 	$res = @file_get_contents($url, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 	if($status_code == '401'){
-		//unsetSession();
-		//printError();
 		$tokenObj = $ttOauth->updateAccessToken();
 		$status = $tokenObj->status;
 		//access_tokenアップデートが成功したら
@@ -305,8 +297,6 @@ function postLike($topicId, $postId){
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 
 	if($status_code == '401'){
-		//unsetSession();
-		//printError();
 		$tokenObj = $ttOauth->updateAccessToken();
 		$status = $tokenObj->status;
 		//access_tokenアップデートが成功したら

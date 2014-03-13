@@ -2,9 +2,8 @@ $(function () {
 	var topicID;
 	var profileID;
 	getProfile();
-	//getTopicList();
 	setPusher();
-	setSubmit()
+	setSubmit();
 });
 
 function setSubmit(){
@@ -13,7 +12,7 @@ function setSubmit(){
 		sendMessage();
 	});
 }
-
+//プロフィール取得
 function getProfile(){
 	var data = new Object();
 	data.type = "profile";
@@ -28,13 +27,15 @@ function getProfile(){
 				profileID = res["id"];
 				getTopicList();
 			}else{
-				location.href="Authorize.php";
+				//認証失敗の場合、PHP側でリダイレクトかけてるから要らないかも
+				//location.href="Authorize.php";
 			}
 		}
 	});
 	return false;
 }
 
+//トピックのリスト取得（プルダウン）
 function getTopicList(){
 	var data = new Object();
 	data.type = "topicsList";
@@ -60,19 +61,21 @@ function getTopicList(){
 				topicID = array[0].topic.id;
 				getTopic(topicID);
 			}else{
-				location.href="Authorize.php";
+				//認証失敗の場合、PHP側でリダイレクトかけてるから要らないかも
+				//location.href="Authorize.php";
 			}
 		}
 	});
 	return false;
 }
-
+//プルダウン選択時
 function selectTopic(obj){
 	topicID = obj.options[obj.selectedIndex].value;
 	getTopic(topicID, null, null, null);
 	return false;
 }
 
+//トピックの中身を取得
 function getTopic(topicId, from, count, direction){
 	$("#timeline").empty();
 	var data = new Object();
@@ -133,12 +136,15 @@ function getTopic(topicId, from, count, direction){
 				$("#timeline").append(list);
 				pushLike();
 			}else{
-				location.href="Authorize.php";
+				//認証失敗の場合、PHP側でリダイレクトかけてるから要らないかも
+				//location.href="Authorize.php";
 			}
 		}
 	})
 	return false;
 }
+
+//メッセージを送る
 function sendMessage(){
 	var data = new Object();
 	data.id = topicID;
@@ -156,11 +162,14 @@ function sendMessage(){
 				getTopic(topicID, null, null, null);
 				$('#inputMessage').val('');
 			}else{
-				location.href="Authorize.php";
+				//認証失敗の場合、PHP側でリダイレクトかけてるから要らないかも
+				//location.href="Authorize.php";
 			}
 		}
 	})
 }
+
+//LIKEをする
 function pushLike(){
 	$('.like').click(function(event){
 		var data = new Object();
@@ -182,12 +191,15 @@ function pushLike(){
 					me.addClass('checkLike');
 					me.unbind();
 				}else{
-					location.href="Authorize.php";
+					//認証失敗の場合、PHP側でリダイレクトかけてるから要らないかも
+					//location.href="Authorize.php";
 				}
 			}
 		})
 	})
 }
+
+//PUSHER設定
 function setPusher(){
 	Pusher.log = function(message) {
       if (window.console && window.console.log) {
@@ -201,6 +213,7 @@ function setPusher(){
     });
 }
 
+//文言の中にURがある場合配列を返す
 function get_urllist(str){
 	var pat=/(https?:\/\/[\x21-\x7e]+)/g;
 	var list=str.match(pat);

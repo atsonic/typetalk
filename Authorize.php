@@ -1,4 +1,5 @@
 <?php
+//セッションをスタートさせるため共通ファイルを読み込む
 include("Include.php");
 $url;
 

@@ -1,6 +1,6 @@
 <?php
 class TTOauth {
-	//token取得
+	//tokenを取得するための関数
 	public function getToken($code){
 		$obj = new stdClass();
 		$fields = array(
@@ -35,7 +35,7 @@ class TTOauth {
 		}
 		return $obj;
 	}
-	//リフレッシュtokenでaccess tokenを更新
+	//refresh tokenでaccess tokenを更新する関数
 	public function updateAccessToken(){
 		$obj = new stdClass();
 		if(isset($_SESSION["tt_r_token"])){//refresh token確認

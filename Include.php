@@ -6,7 +6,7 @@ session_set_cookie_params(60 * 60 * 24 * 7, "/");
 session_start();
 require_once("Config.php");
 
-//typetalkの認証へ
+//typetalkの認証へ遷移するための関数
 function backToOAuth(){
 	global $ttOauth;
 	$ttOauth->deleteCookies();
