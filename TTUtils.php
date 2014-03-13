@@ -284,7 +284,7 @@ function postLike($topicId, $postId){
 }
 
 //エラー出力
-function printError($status){
+function printError($status = null){
 	if(is_null($status)){
 		$status = 1;
 	}
