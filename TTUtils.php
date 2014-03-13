@@ -1,7 +1,9 @@
 <?php
 //ステータスコード、エラーコードなんかがあまいので要検討
 require_once("Include.php");
+require_once('TTOauth.php');
 require_once('lib/Pusher.php');
+$ttOauth = new TTOauth();//typetalk oAuthオブジェクト
 
 //JSONとして吐き出すためヘッダーを追加
 header("Content-Type: text/javascript; charset=utf-8");
@@ -10,6 +12,7 @@ header("Content-Type: text/javascript; charset=utf-8");
 //まだ処理が完璧じゃない。
 if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
 	$token = $_SESSION['tt_token'];
+	$r_token = $_SESSION['tt_token'];
 	switch ($_GET['type']) {
 		case 'profile':
 			getProfile();
@@ -51,15 +54,32 @@ if(isset($_GET['type']) && isset($_SESSION['tt_token'])){
 
 //プロフィールの取得
 function getProfile(){
-	global $token;
+	global $token,$r_token,$ttOauth;
 	$options = array('http' => array(
 	    'method' => 'GET',
 	    'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer " . $token));
 	$res = @file_get_contents(PROFILE_URI, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401' || $res == null){
+
+	//認証エラーの時
+	if($status_code == '401'){
 		unsetSession();
 		printError();
+	//戻り値が空の時（access_token期限切れ）
+	}else if(is_null($res)){
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			getProfile();
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
+	//取得成功
 	}else{
 		$json = json_decode($res);
 		
@@ -74,15 +94,31 @@ function getProfile(){
 }
 //トピック一覧取得
 function getTopicsList(){
-	global $token;
+	global $token,$r_token,$ttOauth;
 	$options = array('http' => array(
 	    'method' => 'GET',
 	    'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer " . $token));
 	$res = @file_get_contents(TOPICS_URI, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401' || $res == null){
+	//認証エラーの時
+	if($status_code == '401'){
 		unsetSession();
 		printError();
+	//戻り値が空の時（access_token期限切れ）
+	}else if(is_null($res)){
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			getTopicsList();
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
+	//取得成功
 	}else{
 		$json = json_decode($res);
 		$array = array();
@@ -105,7 +141,7 @@ function getTopicsList(){
 }
 //トピック内容取得
 function getTopic($id, $from, $count, $direction){
-	global $token;
+	global $token,$r_token,$ttOauth;
 	$fields = array();
 	if($id == null){
 		printError();
@@ -118,13 +154,28 @@ function getTopic($id, $from, $count, $direction){
 	$options = array('http' => array(
 	    'method' => 'GET',
 	    'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer " . $token,
+	    //'header' => "Content-Type: application/x-www-form-urlencoded\r\nAuthorization: Bearer ",
 	    'content' => http_build_query($fields)));
 
 	$res = @file_get_contents(TOPICS_URI."/".$id, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401' || $res == null){
+	if($status_code == '401'){
 		unsetSession();
 		printError();
+	}else if(is_null($res)){
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			getTopic($id, $from, $count, $direction);
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
+	//取得成功
 	}else{
 		$json = json_decode($res);
 		$array = $json->posts;
@@ -157,7 +208,7 @@ function getTopic($id, $from, $count, $direction){
 //メッセージ送信
 //画像添付とか未処理。
 function sendMessage($id, $message){
-	global $token;
+	global $token,$r_token,$ttOauth;
 	$url = TOPICS_URI."/".$id;
 	$fields = array(
 	    'message' => $message
@@ -168,9 +219,23 @@ function sendMessage($id, $message){
 	    'content' => http_build_query($fields)));
 	$res = @file_get_contents($url, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
-	if($status_code == '401' || $res == null){
+	if($status_code == '401'){
 		unsetSession();
 		printError();
+	}else if(is_null($res)){
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			sendMessage($id, $message);
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
+	//取得成功
 	}else{
 		$pusher = new Pusher('39daabf949c81c9b1bea', '3c2d2f70a09e11bf0ddd', '66619');
 		$pusher->trigger('tt-channel', 'tt-event', $id );
@@ -185,7 +250,7 @@ function sendMessage($id, $message){
 
 //Like送信
 function postLike($topicId, $postId){
-	global $token;
+	global $token,$r_token,$ttOauth;
 	$url = TOPICS_URI."/".$topicId."/posts/".$postId."/like";
 	$options = array('http' => array(
 	    'method' => 'POST',
@@ -193,9 +258,23 @@ function postLike($topicId, $postId){
 	$res = @file_get_contents($url, false, stream_context_create($options));
 	list($version, $status_code, $msg) = explode(' ',$http_response_header[0], 3);
 
-	if($status_code == '401' || $res == null){
+	if($status_code == '401'){
 		unsetSession();
 		printError();
+	}else if(is_null($res)){
+		//access_tokenアップデート
+		$tokenObj = $ttOauth->updateAccessToken();
+		$status = $tokenObj->status;
+		//access_tokenアップデートが成功したら
+		if($status == "0"){
+			$token = $tokenObj->token;
+			$r_token = $tokenObj->r_token;
+			postLike($topicId, $postId);
+		//access_tokenアップデートが失敗したら
+		}else{
+			backToOAuth();
+		}
+	//取得成功
 	}else{
 		$jsonObj = new stdClass();
 		$jsonObj->status = "0";
@@ -206,7 +285,7 @@ function postLike($topicId, $postId){
 
 //エラー出力
 function printError($status){
-	if($status == null){
+	if(is_null($status)){
 		$status = 1;
 	}
 	$jsonObj = new stdClass();

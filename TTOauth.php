@@ -16,10 +16,14 @@ class TTOauth {
 		    'content' => http_build_query($fields)));
 
 		$json = json_decode(@file_get_contents(ACCESS_TOKEN_URI, false, stream_context_create($options)));
-		if($json == null){
+
+		//取得失敗
+		if(is_null($json)){
 			$obj->status= "1";
 			$obj->token= "";
 			$obj->r_token= "";
+
+		//取得成功
 		}else{
 			$token = $json->access_token;
 			$r_token = $json->refresh_token;
@@ -48,16 +52,18 @@ class TTOauth {
 			    'content' => http_build_query($fields)));
 
 			$json = json_decode(file_get_contents(ACCESS_TOKEN_URI, false, stream_context_create($options)));
-			//var_dump($json);
+
 			$token = $json->access_token;
-			//setcookie('tt_token', $token, time() + (60 * 60));
 			$_SESSION["tt_token"] = $token;
-			if($json == null){
+
+			//取得失敗
+			if(is_null($json)){
 				$obj->status= "1";
 				$obj->token= "";
 				$obj->r_token= "";
+
+			//取得成功
 			}else{
-				//setcookie("tt_token", $token, 60 * 60);
 				$obj->status= "0";
 				$obj->token= $token;
 				$obj->r_token= $r_token;
@@ -71,11 +77,6 @@ class TTOauth {
 	}
 	//cookie削除
 	public function deleteCookies(){
-		/*
-		setcookie('tt_code','',time() - 3600);
-		setcookie('tt_token','',time() - 3600);
-		setcookie('tt_r_token','',time() - 3600);
-		*/
 		setcookie(session_name(),'',time() - 3600);
 	}
 }

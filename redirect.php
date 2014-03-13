@@ -7,7 +7,6 @@ $token;//アプリtoken
 $r_token;//アプリrefresh token
 $ttOauth = new TTOauth();//typetalk oAuthオブジェクト
 
-
 //諸々判定
 if(isset($_GET['code'])){
 	$_SESSION["tt_code"] = $_GET['code'];
@@ -17,8 +16,6 @@ if(isset($_GET['code'])){
 
 //tt_codeがない場合
 if(!isset($_SESSION["tt_code"])){
-	//print "fdsa";
-	//var_dump($_SESSION);
 	backToOAuth();
 }else{
 	$code = $_SESSION["tt_code"];
@@ -26,16 +23,6 @@ if(!isset($_SESSION["tt_code"])){
 	if(isset($_SESSION["tt_token"]) && isset($_SESSION["tt_r_token"])){
 		$token = $_SESSION["tt_token"];
 		$r_token = $_SESSION["tt_r_token"];
-	//tokenなし、refresh tokenありの場合
-	}else if(!isset($_SESSION["tt_token"]) && isset($_SESSION["tt_r_token"])){
-		$tokenObj = $ttOauth->updateAccessToken();
-		$status = $tokenObj->status;
-		if($status == "0"){
-			$token = $tokenObj->token;
-			$r_token = $tokenObj->r_token;
-		}else{
-			backToOAuth();
-		}
 	//token関係なしの場合
 	}else{
 		$tokenObj = $ttOauth->getToken($code);
@@ -49,12 +36,6 @@ if(!isset($_SESSION["tt_code"])){
 	}
 }
 
-//typetalkの認証へ
-function backToOAuth(){
-	global $ttOauth;
-	$ttOauth->deleteCookies();
-	header("Location: Authorize.php");
-}
 ?>
 <html>
 <head>

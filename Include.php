@@ -6,6 +6,12 @@ session_set_cookie_params(60 * 60 * 24 * 7, "/");
 session_start();
 require_once("Config.php");
 
+//typetalkの認証へ
+function backToOAuth(){
+	global $ttOauth;
+	$ttOauth->deleteCookies();
+	header("Location: Authorize.php");
+}
 //セッションをクリアする場合は下記を実行
 function unsetSession(){
 	$_SESSION = array();
