@@ -69,8 +69,7 @@ function setContent(){
 <body>
 	<div id="wrapper">
 		<?php
-			echo $cont;//コンテンツを出力	
-			exit;
+			echo $cont;//コンテンツを出力
 		?>
 	</div>
 </body>
